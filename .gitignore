@@ -1,0 +1,18 @@
+.claude/settings.local.json
+.claude.json
+CLAUDE.local.md
+.task
+/Taskfile.yaml
+/Taskfile.yml
+.env
+mise.local.toml
+/tmp
+docker/data
+.DS_Store
+*.log
+
+# python
+.venv
+__pycache__
+.ruff_cache
+.pytest_cache

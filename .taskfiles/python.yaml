@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  install:
+    desc: Install Python dependencies
+    cmd: uv pip install -e .
+    preconditions:
+      - sh: command -v uv
+        msg: UV is not installed
+
+  format:
+    desc: Format project
+    cmds:
+      - black
+
+  check:
+    desc: Check project
+    cmds:
+      - ruff check
