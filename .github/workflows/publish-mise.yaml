@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - mise/Dockerfile
+      - mise/**
       - .github/workflows/publish-mise.yaml
 
 env:
