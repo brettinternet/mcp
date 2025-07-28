@@ -1,3 +1,4 @@
+---
 name: Publish
 
 on:
@@ -5,13 +6,14 @@ on:
     branches:
       - main
     paths:
-      - Dockerfile.claude
-      - .github/workflows/publish-claude.yaml
+      - mise/Dockerfile
+      - .github/workflows/publish-mise.yaml
 
 env:
   DOCKER_USERNAME: brettinternet
-  DOCKERFILE: Dockerfile.claude
-  IMAGE_NAME: claude
+  DOCKERFILE: mise/Dockerfile
+  IMAGE_NAME: mcp-mise
+  DESCRIPTION: Mise MCP Server
 
 jobs:
   build-and-publish-container:
@@ -60,7 +62,7 @@ jobs:
           labels: |
             org.opencontainers.image.name=${{ env.IMAGE_NAME }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}/tree/main
-            org.opencontainers.image.description=Run Claude in a containerized sandbox.
+            org.opencontainers.image.description=${{ env.DESCRIPTION }}
             org.opencontainers.image.licenses=MIT
 
       - name: Build and push Docker image
@@ -72,10 +74,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            BUILD_VERSION=${{ steps.meta.outputs.sha }}
-            BUILD_DATE=${{ github.event.repository.updated_at }}
-            BUILD_ENVIRONMENT=production
 
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
@@ -83,5 +81,5 @@ jobs:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PAT }}
           repository: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
-          short-description: Run Claude in a containerized sandbox.
+          short-description: ${{ env.DESCRIPTION }}
           readme-filepath: README.md

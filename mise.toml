@@ -2,13 +2,19 @@
 _.python.venv = { path = ".venv", create = true }
 
 [tools]
-black = "latest"
+bun = "latest"
+python = "3.11"
 ruff = "latest"
 task = "latest"
 uv = "latest"
+gh = "latest"
+node = "lts"
+"npm:@anthropic-ai/claude-code" = "latest"
+fzf = "latest"
 
 [settings]
 disable_backends = ["asdf", "pipx"]
 pipx.uvx = true
 python.uv_venv_auto = true
 npm.bun = true
+idiomatic_version_file_enable_tools = ["python"]

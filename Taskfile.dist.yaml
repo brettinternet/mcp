@@ -11,6 +11,7 @@ env:
 includes:
   setup: .taskfiles/setup.yaml
   python: .taskfiles/python.yaml
+  server: .taskfiles/server.yaml
 
 tasks:
   default:

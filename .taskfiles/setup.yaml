@@ -2,9 +2,6 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-includes:
-  python: python.yaml
-
 tasks:
   init:
     desc: Install dependencies
@@ -12,13 +9,12 @@ tasks:
       - task: mise
       - task: create-env-file
       - task: direnv
-      - task: python:install
 
   mise:
     desc: Install workstation dependencies
     cmds:
-      - mise trust --silent -a
-      - mise install
+      - mise trust -q -a
+      - mise install -q
     preconditions:
       - sh: command -v mise
         msg: Mise is not installed
