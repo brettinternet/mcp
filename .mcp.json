@@ -4,5 +4,11 @@
       "command": "python",
       "args": ["-m", "mcp_server_mise"],
       "cwd": "./mise"
+    },
+    "standup": {
+      "command": "python",
+      "args": ["-m", "mcp_server_standup"],
+      "cwd": "./standup"
+    }
   }
 }
