@@ -236,7 +236,7 @@ Add to your MCP settings:
 <details>
 <summary>Is there an elixir upgrade available?</summary>
 
-```json
+```
 > Is there an elixir upgrade available?
   ⎿  node                           lts     22.17.0  22.17.1 ~/dev/me/mcp/mise.toml
      npm:@anthropic-ai/claude-code  latest  1.0.43   1.0.61  ~/dev/me/mcp/mise.toml
