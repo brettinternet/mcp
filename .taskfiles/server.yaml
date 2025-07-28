@@ -4,6 +4,7 @@ version: "3"
 
 vars:
   MISE_DIR: mise
+  STANDUP_DIR: standup
 
 tasks:
   mise:install:
@@ -19,6 +20,23 @@ tasks:
   mise:test:
     desc: Run tests
     dir: "{{.MISE_DIR}}"
+    cmd: python -m pytest tests
+    preconditions:
+      - *python-required
+
+  standup:install:
+    desc: Install Python dependencies
+    dir: "{{.STANDUP_DIR}}"
+    cmd: uv pip install -e .[dev]
+    preconditions:
+      - &python-required sh: command -v python
+        msg: Python is not installed
+      - &uv-required sh: command -v uv
+        msg: UV is not installed
+
+  standup:test:
+    desc: Run tests
+    dir: "{{.STANDUP_DIR}}"
     cmd: python -m pytest tests
     preconditions:
       - *python-required

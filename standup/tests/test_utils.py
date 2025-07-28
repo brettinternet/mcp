@@ -3,7 +3,7 @@
 from datetime import datetime
 from freezegun import freeze_time
 
-from standup_server.utils import DateParser
+from mcp_server_standup.utils import DateParser
 
 
 class TestDateParser:

@@ -43,7 +43,7 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "username": {
                         "type": "string",
-                        "description": "GitHub username to filter by. If not provided, uses all activity.",
+                        "description": "GitHub username to filter by. If not provided, uses current authenticated user.",
                     },
                     "repos": {
                         "type": "string",
@@ -148,7 +148,7 @@ async def _get_standup_summary(arguments: dict[str, Any]) -> list[TextContent]:
     target_date = date_parser.parse_date(date)
 
     # Get GitHub activity
-    github_activity = await github_service.get_activity(
+    github_activity = github_service.get_activity(
         target_date=target_date,
         username=username,
         repos=repos.split(",") if repos else None,
@@ -171,7 +171,7 @@ async def _get_github_activity(arguments: dict[str, Any]) -> list[TextContent]:
 
     target_date = date_parser.parse_date(date)
 
-    activity = await github_service.get_activity(
+    activity = github_service.get_activity(
         target_date=target_date,
         username=username,
         repos=repos.split(",") if repos else None,

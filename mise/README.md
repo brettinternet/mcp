@@ -1,6 +1,6 @@
 # Mise MCP Server
 
-A server for AI agents to enable tooling to manage dependencies and development dependencies using [mise](https://github.com/jdx/mise).
+A Model Context Protocol (MCP) server for AI agents to enable tooling to manage dependencies and development dependencies using [mise](https://github.com/jdx/mise).
 
 > [!CAUTION]
 > This server allows agents to install additional dependencies and may represent a security risk. Exercise caution when using this MCP server to ensure this does not install and use executables inappropriately.
@@ -152,7 +152,7 @@ $ claude
 - `mise_which` - Show path to mise-managed binary
 - `mise_env` - Show/export environment variables
 
-### Configure for your agent
+### Configure
 
 Add to your MCP settings:
 

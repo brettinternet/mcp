@@ -3,8 +3,8 @@
 import json
 from datetime import datetime
 
-from standup_server.formatting import StandupFormatter
-from standup_server.github import GitHubActivity, GitHubEvent
+from mcp_server_standup.formatting import StandupFormatter
+from mcp_server_standup.github import GitHubActivity, GitHubEvent
 
 
 class TestStandupFormatter:

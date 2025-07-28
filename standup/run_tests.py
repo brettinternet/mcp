@@ -74,7 +74,7 @@ def main():
 
     # Test basic imports
     success &= run_command(
-        "python -c 'from standup_server.server import main; print(\"✅ Server imports work\")'",
+        "python -c 'from mcp_server_standup.server import main; print(\"✅ Server imports work\")'",
         "Testing basic imports"
     )
 

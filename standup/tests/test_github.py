@@ -1,11 +1,12 @@
 """Tests for GitHub service module."""
 
 import pytest
+import json
 from datetime import datetime
 from unittest.mock import Mock, patch, AsyncMock
-import httpx
+import subprocess
 
-from standup_server.github import GitHubService, GitHubEvent, GitHubActivity
+from mcp_server_standup.github import GitHubService, GitHubEvent, GitHubActivity
 
 
 class TestGitHubService:
@@ -13,47 +14,30 @@ class TestGitHubService:
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.service = GitHubService()
-        self.service.github_token = "test_token"
-        self.service.github_org = "test_org"
+        with patch("subprocess.run") as mock_run:
+            # Mock the gh --version check during initialization
+            mock_run.return_value = Mock(returncode=0)
+            self.service = GitHubService()
+            self.service.github_org = "test_org"
 
     def test_init_without_env_vars(self):
         """Test initialization without environment variables."""
-        with patch.dict("os.environ", {}, clear=True):
+        with patch.dict("os.environ", {}, clear=True), patch("subprocess.run") as mock_run:
+            mock_run.return_value = Mock(returncode=0)
             service = GitHubService()
-            assert service.github_token is None
             assert service.github_org is None
+            assert service.github_repos is None
 
     def test_init_with_env_vars(self):
         """Test initialization with environment variables."""
         with patch.dict(
-            "os.environ", {"GITHUB_TOKEN": "test_token", "GITHUB_ORG": "test_org"}
-        ):
+            "os.environ", {"GITHUB_ORG": "test_org", "GITHUB_REPOS": "test_org/repo1,test_org/repo2"}
+        ), patch("subprocess.run") as mock_run:
+            mock_run.return_value = Mock(returncode=0)
             service = GitHubService()
-            assert service.github_token == "test_token"
             assert service.github_org == "test_org"
+            assert service.github_repos == "test_org/repo1,test_org/repo2"
 
-    def test_get_headers_without_token(self):
-        """Test header generation without token."""
-        service = GitHubService()
-        service.github_token = None
-
-        headers = service._get_headers()
-        expected = {
-            "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "mcp-standup-server/0.1.0",
-        }
-        assert headers == expected
-
-    def test_get_headers_with_token(self):
-        """Test header generation with token."""
-        headers = self.service._get_headers()
-        expected = {
-            "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "mcp-standup-server/0.1.0",
-            "Authorization": "token test_token",
-        }
-        assert headers == expected
 
     def test_matches_username(self):
         """Test username matching logic."""

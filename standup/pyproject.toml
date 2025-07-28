@@ -14,7 +14,6 @@ license = { text = "MIT" }
 requires-python = ">=3.8"
 dependencies = [
   "mcp>=1.0.0",
-  "httpx>=0.25.0",
   "python-dateutil>=2.8.0",
   "pydantic>=2.0.0",
   "rich>=13.0.0",
@@ -25,25 +24,19 @@ dependencies = [
 dev = [
   "pytest>=7.0.0",
   "pytest-asyncio>=0.21.0",
-  "pytest-httpx>=0.21.0",
   "pytest-mock>=3.10.0",
   "freezegun>=1.2.0",
-  "black>=23.0.0",
   "ruff>=0.1.0",
 ]
 
 [project.scripts]
-mcp-standup-server = "standup_server.server:main_sync"
+mcp-standup-server = "mcp_server_standup.server:main_sync"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-dir]
 "" = "src"
-
-[tool.black]
-line-length = 88
-target-version = ['py38']
 
 [tool.ruff]
 line-length = 88

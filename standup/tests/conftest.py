@@ -2,7 +2,7 @@
 
 import pytest
 from datetime import datetime
-from standup_server.github import GitHubActivity, GitHubEvent
+from mcp_server_standup.github import GitHubActivity, GitHubEvent
 
 
 @pytest.fixture

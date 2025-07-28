@@ -6,7 +6,7 @@ from unittest.mock import patch, AsyncMock
 
 from mcp.types import TextContent
 
-from standup_server.server import (
+from mcp_server_standup.server import (
     handle_list_tools,
     handle_call_tool,
     _get_standup_summary,
@@ -17,7 +17,7 @@ from standup_server.server import (
     date_parser,
     formatter,
 )
-from standup_server.github import GitHubActivity
+from mcp_server_standup.github import GitHubActivity
 
 
 class TestMCPServer:

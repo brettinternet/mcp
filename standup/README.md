@@ -1,6 +1,6 @@
 # MCP Standup Server
 
-A Model Context Protocol (MCP) server for generating standup reports from GitHub activity.
+A Model Context Protocol (MCP) server for generating standup reports from GitHub activity. It uses the GitHub CLI so we don't have to use a PAT for the API.
 
 ## Features
 
@@ -10,43 +10,23 @@ A Model Context Protocol (MCP) server for generating standup reports from GitHub
 - **Commit Deduplication**: Handles force pushes and duplicate commits intelligently
 - **Multiple Output Formats**: Markdown, plain text, or JSON output
 
-## Installation
+## Usage
 
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   cd mcp-standup-server
-   pip install -e .
-   ```
+Ensure you have the [GitHub CLI](https://cli.github.com/) installed and authenticated:
 
-## Configuration
+```bash
+# Authenticate with GitHub
+gh auth login
+```
 
 Set the following environment variables:
 
 ```bash
 # Required for GitHub integration
-export GITHUB_TOKEN="your_github_token"
 export GITHUB_ORG="your_organization"
-
-```
-
-## Usage
-
-Add this server to your MCP configuration (`.mcp.json`):
-
-```json
-{
-  "mcpServers": {
-    "standup-server": {
-      "command": "python",
-      "args": ["-m", "standup_server.server"],
-      "env": {
-        "GITHUB_TOKEN": "your_token",
-        "GITHUB_ORG": "your_org"
-      }
-    }
-  }
-}
+# OR
+export GITHUB_REPOS="org/repo1,org/repo2"
+# OR set them in your MCP configuration
 ```
 
 ## Available Tools
@@ -84,53 +64,223 @@ Format activity data into standup-friendly reports.
 - `github_activity` (required): GitHub activity data
 - `format` (optional): Output format ("markdown", "text", "json")
 
-## Migration from Shell Script
+### Configure
 
-This MCP server replaces the functionality of `scripts/github-activity.sh` with several improvements:
+Add to your MCP settings:
 
-- **Better Error Handling**: Robust HTTP error handling and retry logic
-- **Async Performance**: Concurrent API calls for faster data fetching
-- **Structured Data**: Clean data models and processing pipeline
-- **Extensibility**: Easy to add new data sources via additional MCP servers
-- **Testing**: Unit testable components
-- **Rich Formatting**: Multiple output formats with proper markdown links
+<details>
+<summary>Using uvx from published</summary>
 
-## Development
+```json
+{
+  "mcpServers": {
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-standup"],
+      "env": {
+        "GITHUB_REPOS": "brettinternet/mcp"
+      }
+    }
+  }
+}
+```
+</details>
 
-Install development dependencies:
+<details>
+<summary>Using uvx from local</summary>
+
+```json
+{
+  "mcpServers": {
+    "fetch": {
+      "command": "uvx",
+      "args": ["--from . mcp-server-standup"],
+      "env": {
+        "GITHUB_REPOS": "brettinternet/mcp"
+      }
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary>Using uvx from GitHub</summary>
+
+```json
+{
+  "mcpServers": {
+    "fetch": {
+      "command": "uvx",
+      "args": ["--from git+https://github.com/brettinternet/mcp.git#subdirectory=standup mcp-server-standup"],
+      "env": {
+        "GITHUB_REPOS": "brettinternet/mcp"
+      }
+    }
+  }
+}
+```
+</details>
+
+<!-- <details>
+<summary>Using docker</summary>
+
+```json
+{
+  "mcpServers": {
+    "fetch": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "ghcr.io/brettinternet/mcp-standup"],
+      "env": {
+        "GITHUB_REPOS": "brettinternet/mcp"
+      }
+    }
+  }
+}
+```
+</details> -->
+
+<details>
+<summary>Using pip installation</summary>
+
+```json
+{
+  "mcpServers": {
+    "fetch": {
+      "command": "python",
+      "args": ["-m", "mcp_server_standup"],
+      "env": {
+        "GITHUB_REPOS": "brettinternet/mcp"
+      }
+    }
+  }
+}
+```
+</details>
+
+### Examples
+
+#### 1. Get Standup Summary (Most Common)
 
 ```bash
-pip install -e ".[dev]"
+# Get yesterday's activity summary
+get_standup_summary(date="yesterday")
+
+# Get Friday's activity for a specific user
+get_standup_summary(date="friday", username="john-doe")
+
+# Get activity for specific repositories
+get_standup_summary(date="2024-07-23", repos="myorg/repo1,myorg/repo2")
 ```
 
-Run tests:
+**Expected Output:**
+```markdown
+# Standup Summary - July 23, 2024
+
+- Made **3 commits** to [myorg/repo1](https://github.com/myorg/repo1)
+  - Add user authentication ([abc123d](https://github.com/myorg/repo1/commit/abc123def456))
+  - Fix login validation ([def456g](https://github.com/myorg/repo1/commit/def456ghi789))
+  - Update tests ([ghi789j](https://github.com/myorg/repo1/commit/ghi789jkl012))
+- Opened **[PR #142](https://github.com/myorg/repo2/pull/142)**: Implement password reset
+- Reviewed **[PR #138](https://github.com/myorg/repo1/pull/138)** (approved)
+
+## GitHub Activity Details
+
+**3 events** across **2 repositories**
+
+- [myorg/repo1](https://github.com/myorg/repo1)
+- [myorg/repo2](https://github.com/myorg/repo2)
+```
+
+#### 2. Get Detailed GitHub Activity
 
 ```bash
-pytest
+# Get detailed activity report
+get_github_activity(date="yesterday", username="john-doe")
+
+# Get activity for specific date
+get_github_activity(date="2024-07-23", repos="myorg/repo1")
 ```
 
-Format code:
+#### 3. Parse Date Expressions
 
 ```bash
-ruff format src tests
-ruff check src tests
+# Test date parsing
+get_workday_date(date_expression="last friday")
+get_workday_date(date_expression="yesterday")
+get_workday_date(date_expression="2024-07-23")
 ```
 
-## Architecture
+**Expected Output:**
+```
+Parsed date: 2024-07-19T00:00:00
+```
 
-- **`server.py`**: Main MCP server with tool definitions
-- **`github.py`**: GitHub API integration and event processing
-- **`formatting.py`**: Report formatting and standup generation
-- **`utils.py`**: Date parsing and utility functions
+#### 4. Format Custom Reports
 
-## Future Enhancements
+```bash
+# Format activity data in different formats
+format_standup_report(
+  github_activity=activity_data,
+  format="json"
+)
 
-- [ ] Add Jira integration
-- [ ] Support for custom report templates
-- [ ] Caching for improved performance
-- [ ] Webhook support for real-time updates
-- [ ] Export to various formats (PDF, CSV, etc.)
+format_standup_report(
+  github_activity=activity_data,
+  format="text"
+)
+```
 
-## License
+### Integration with Existing Workflow
 
-MIT License - see LICENSE file for details.
+#### Automated Standup Generation
+
+Create a daily standup note:
+
+```bash
+# This would typically be called from Claude
+standup_summary = get_standup_summary(date="yesterday")
+# Save to file or share with team
+```
+
+### Advanced Usage
+
+#### Filtering by User
+
+```bash
+# Get activity for specific team member
+get_standup_summary(date="yesterday", username="team-lead")
+
+# Compare activity across multiple users (call multiple times)
+get_standup_summary(date="yesterday", username="developer1")
+get_standup_summary(date="yesterday", username="developer2")
+```
+
+#### Date Range Flexibility
+
+```bash
+# Various date formats supported
+get_standup_summary(date="monday")
+get_standup_summary(date="last tuesday")
+get_standup_summary(date="2024-07-15")
+get_standup_summary(date="July 15, 2024")
+```
+
+#### Repository Filtering
+
+```bash
+# All org repositories (default)
+get_standup_summary(date="yesterday")
+
+# Specific repositories only
+get_standup_summary(date="yesterday", repos="org/frontend,org/backend,org/api")
+
+# Single repository
+get_standup_summary(date="yesterday", repos="org/critical-service")
+```
+
+#### Output Formats
+
+- Markdown (Default): Rich formatting with links, perfect for copying to team channels, includes repository links and commit references
+- Plain Text: Clean, no-formatting output, good for plain text environments, links converted to readable text
+- JSON: Structured data format, perfect for programmatic processing, includes full event details and metadata
